@@ -1,0 +1,5 @@
+CREATE TABLE empregado (
+    nome   VARCHAR(40) NOT NULL,
+    cpf    VARCHAR(14) NOT NULL,
+    CONSTRAINT pk_cpf PRIMARY KEY ( cpf )
+);
