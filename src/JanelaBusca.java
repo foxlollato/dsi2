@@ -13,6 +13,10 @@ public class JanelaBusca extends JInternalFrame{
     private JPanel painelBusca;
     private JLabel lblBusca;
     private JTextField txtBusca;
+    private JLabel lblMin;
+    private JTextField txtMin;
+    private JLabel lblMax;
+    private JTextField txtMax;
     private JTable table;
     private JScrollPane scroll;
     private DefaultTableModel model;
@@ -21,7 +25,8 @@ public class JanelaBusca extends JInternalFrame{
     private JButton btnProx;
     private JButton btnAnterior;
     private Container container;
-    private int min =1, max=3, qtd=3;
+    List<Produto> lista = null;
+    private int min =1, max=100, qtd=45;
 
     public JanelaBusca(){
         super("Busca de Produtos", true, true,true,true);
@@ -38,6 +43,16 @@ public class JanelaBusca extends JInternalFrame{
         btnCancelar = new JButton("Cancelar");
         btnProx = new JButton("Proximo");
         btnAnterior = new JButton("Anterior");
+
+        lblMin = new JLabel("Minimo");
+        txtMin = new JTextField(4);
+        lblMax = new JLabel("Maximo");
+        txtMax = new JTextField(4);
+        txtMax.setEditable(false);
+        txtMin.addActionListener(e->{
+            txtMax.setText(String.valueOf(Integer.parseInt(txtMin.getText())+9));
+        });
+
 
         btnProx.addActionListener(this::proximo);
         btnAnterior.addActionListener(this::anterior);
@@ -66,31 +81,27 @@ public class JanelaBusca extends JInternalFrame{
 
         container = getContentPane();
 
-        Box b1 = Box.createHorizontalBox();
-        b1.add(Box.createHorizontalGlue());
-        b1.add(lblBusca);
-        b1.add(txtBusca);
-        b1.add(Box.createHorizontalGlue());
-        painelBusca.add(b1);
+//        Box b1 = Box.createHorizontalBox();
+//        b1.add(lblBusca);
+//        b1.add(txtBusca);
+//        painelBusca.add(b1);
 
         Box b2 = Box.createHorizontalBox();
-        b2.add(Box.createHorizontalGlue());
         b2.add(btnBuscar);
         b2.add(btnCancelar);
-        b2.add(Box.createHorizontalGlue());
         painelBusca.add(b2);
 
         Box b3 = Box.createHorizontalBox();
-        b3.add(Box.createHorizontalGlue());
         b3.add(scroll);
-        b3.add(Box.createHorizontalGlue());
         painelBusca.add(b3);
 
         Box b4 = Box.createHorizontalBox();
-        b3.add(Box.createHorizontalGlue());
         b4.add(btnAnterior);
         b4.add(btnProx);
-        b3.add(Box.createHorizontalGlue());
+        b4.add(lblMin);
+        b4.add(txtMin);
+        b4.add(lblMax);
+        b4.add(txtMax);
         painelBusca.add(b4);
 
 
@@ -98,43 +109,58 @@ public class JanelaBusca extends JInternalFrame{
 
     }
     private void proximo(ActionEvent actionEvent){
-        min+=qtd; max+=qtd;
+        min+=10; max +=10;
         model.setNumRows(0);
-        ProdutoBD produtoBD = new ProdutoBD();
         ProdutoUtil pUtil = new ProdutoUtil();
-        String busca = txtBusca.getText();
-        List<Produto> lista;
-        lista=produtoBD.listarTodos(min,max);
 
-        lista.forEach(p -> model.addRow(pUtil.toArray(p)));
+        for(int i = 0 ; i < 10; i++){
+            model.addRow(pUtil.toArray(lista.get(i+min-1)));
+        }
+        System.out.println(lista.size());
     }
     private void anterior(ActionEvent actionEvent){
-        min-=qtd; max-=qtd;
+        min-=10; max -=10;
         model.setNumRows(0);
-        ProdutoBD produtoBD = new ProdutoBD();
         ProdutoUtil pUtil = new ProdutoUtil();
-        String busca = txtBusca.getText();
-        List<Produto> lista;
-        lista=produtoBD.listarTodos(min,max);
 
-        lista.forEach(p -> model.addRow(pUtil.toArray(p)));
+        for(int i = 0 ; i < 10; i++){
+            model.addRow(pUtil.toArray(lista.get(i+min-1)));
+        }
+        System.out.println(lista.size());
     }
     private void buscaPalavra(ActionEvent actionEvent) {
-        min=1;
-        max=3;
+        min = Integer.parseInt(txtMin.getText());
+        max = Integer.parseInt(txtMax.getText());
         model.setNumRows(0);
         ProdutoBD produtoBD = new ProdutoBD();
         ProdutoUtil pUtil = new ProdutoUtil();
-        String busca = txtBusca.getText();
-        List<Produto> lista;
-//        lista=produtoBD.listarProdutoPorNome(busca);
-        lista=produtoBD.listarTodos(min,max);
 
-//        for(Produto p: lista){
-//           model.addRow(pUtil.toArray(p));
-//        }
 
-        lista.forEach(p -> model.addRow(pUtil.toArray(p)));
+        if(lista == null){
+            if(min <=46){
+                lista=produtoBD.listarTodos(1,100);
+            }else{
+                lista=produtoBD.listarTodos(min-qtd,max+qtd);
+            }
+
+        }else if(lista.size() < max){
+                lista=null;
+                lista = produtoBD.listarTodos(min-qtd,max+qtd);
+        }else if(min <=46){
+            lista=produtoBD.listarTodos(1,100);
+        }
+
+        if(min < 46) {
+            for(int i = min ; i < min+10; i++){
+                model.addRow(pUtil.toArray(lista.get(i-1)));
+            }
+        }else{
+                min = 46; max = 56;
+                for(int i = min; i < max; i++){
+                    model.addRow(pUtil.toArray(lista.get(i-1)));
+            }
+
+        }
     }
 
     private void ajustarJanela(){

@@ -15,7 +15,8 @@ import org.apache.commons.dbcp.BasicDataSource;
 public class ConexaoBD {
     private String user = "system";
     private String pass = "senha123";
-    private String url = "jdbc:oracle:thin:@localhost:1521:xe";
+    private String url = "jdbc:oracle:thin:@192.168.0.116:1521:xe";
+//    private String url = "jdbc:oracle:thin:@localhost:1521:xe";
     private String driver = "oracle.jdbc.OracleDriver";
 
     private BasicDataSource ds; //um objeto do tipo BasicDataSource representará nosso pool de conexões
